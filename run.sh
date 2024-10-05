@@ -1,0 +1,1 @@
+git pull && python download.py muzika3.json
