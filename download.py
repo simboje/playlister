@@ -3,7 +3,7 @@ import json
 import yt_dlp
 import sys
 import shutil
-import zipfile
+import pyminizip
 
 def download_audio(filename):
     # Derive the folder name from the filename (remove .json extension)
@@ -42,7 +42,7 @@ def download_audio(filename):
             except Exception as e:
                 print(f"Failed to download {video_title}: {e}")
 
-    # Zip the entire folder using shutil or zipfile
+    # Zip the entire folder using shutil
     zip_output = download_folder + ".zip"
     
     try:
@@ -51,6 +51,18 @@ def download_audio(filename):
         print(f"Folder '{download_folder}' has been zipped successfully.")
     except Exception as e:
         print(f"Error while zipping the folder: {e}")
+        return
+    
+    # Add password protection to the zip file
+    password = "passwordfiles246"
+    try:
+        pyminizip.compress(zip_output, None, zip_output.replace('.zip', '_protected.zip'), password, 5)
+        print(f"Zipped file '{zip_output}' is now protected and saved as '{zip_output.replace('.zip', '_protected.zip')}'.")
+        
+        # Optionally, remove the original unprotected zip file if needed
+        os.remove(zip_output)
+    except Exception as e:
+        print(f"Error while adding password to zip: {e}")
 
 if __name__ == "__main__":
     # Check if filename is provided
