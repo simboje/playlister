@@ -2,12 +2,14 @@ import os
 import json
 import yt_dlp
 import sys
+import shutil
+import zipfile
 
 def download_audio(filename):
     # Derive the folder name from the filename (remove .json extension)
     download_folder = os.path.splitext(os.path.basename(filename))[0]
     
-    # Load the JSON file
+    # Load the JSON file with utf-8 encoding to avoid UnicodeDecodeError
     with open(filename, 'r', encoding='utf-8') as f:
         video_list = json.load(f)
     
@@ -21,7 +23,7 @@ def download_audio(filename):
         'postprocessors': [{
             'key': 'FFmpegExtractAudio',
             'preferredcodec': 'mp3',
-            'preferredquality': '320',
+            'preferredquality': '320',  # Set to 320 kbps for highest quality MP3
         }],
         # Save the audio files in the derived folder with video title as the file name
         'outtmpl': os.path.join(download_folder, '%(title)s.%(ext)s'),
@@ -39,6 +41,16 @@ def download_audio(filename):
                 print(f"Downloaded: {video_title}.mp3")
             except Exception as e:
                 print(f"Failed to download {video_title}: {e}")
+
+    # Zip the entire folder using shutil or zipfile
+    zip_output = download_folder + ".zip"
+    
+    try:
+        # Use shutil.make_archive to zip the whole folder
+        shutil.make_archive(download_folder, 'zip', download_folder)
+        print(f"Folder '{download_folder}' has been zipped successfully.")
+    except Exception as e:
+        print(f"Error while zipping the folder: {e}")
 
 if __name__ == "__main__":
     # Check if filename is provided
