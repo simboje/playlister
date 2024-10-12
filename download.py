@@ -7,15 +7,17 @@ import pyminizip
 
 def download_audio(filename):
     # Derive the folder name from the filename (remove .json extension)
-    download_folder = os.path.splitext(os.path.basename(filename))[0]
+    download_folder = 'download_dir'
+    playlist_name = os.path.splitext(os.path.basename(filename))[0]
     
     # Load the JSON file with utf-8 encoding to avoid UnicodeDecodeError
     with open(filename, 'r', encoding='utf-8') as f:
         video_list = json.load(f)
     
-    # Create the folder for downloads if it doesn't exist
-    if not os.path.exists(download_folder):
-        os.makedirs(download_folder)
+    if os.path.exists(download_folder):
+        shutil.rmtree(download_folder)
+
+    os.makedirs(download_folder)
     
     # Configure yt-dlp options for downloading audio
     ydl_opts = {
@@ -35,7 +37,6 @@ def download_audio(filename):
         for entry in video_list:
             video_title = entry[0]
             video_url = entry[1]
-            print(f"Downloading: {video_title} from {video_url}")
             try:
                 ydl.download([video_url])  # Download the video as audio
                 print(f"Downloaded: {video_title}.mp3")
@@ -43,7 +44,7 @@ def download_audio(filename):
                 print(f"Failed to download {video_title}: {e}")
 
     # Zip the entire folder using shutil
-    zip_output = download_folder + ".zip"
+    zip_output = playlist_name + ".zip"
     
     try:
         # Use shutil.make_archive to zip the whole folder
@@ -53,14 +54,15 @@ def download_audio(filename):
         print(f"Error while zipping the folder: {e}")
         return
     
+    unprotected = f"{download_folder}.zip"
     # Add password protection to the zip file
     password = "passwordfiles246"
     try:
-        pyminizip.compress(zip_output, None, zip_output.replace('.zip', '_protected.zip'), password, 5)
-        print(f"Zipped file '{zip_output}' is now protected and saved as '{zip_output.replace('.zip', '_protected.zip')}'.")
+        pyminizip.compress(unprotected, None, unprotected.replace('.zip', '_protected.zip'), password, 1)
+        print(f"Zipped file '{unprotected}' is now protected and saved as '{unprotected.replace('.zip', '_protected.zip')}'.")
         
         # Optionally, remove the original unprotected zip file if needed
-        os.remove(zip_output)
+        os.remove(unprotected)
     except Exception as e:
         print(f"Error while adding password to zip: {e}")
 
