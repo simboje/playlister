@@ -37,7 +37,7 @@ def download_audio(filename):
             video_url = entry[1]
             print(f"Downloading: {video_title} from {video_url}")
             try:
-                # ydl.download([video_url])  # Download the video as audio
+                ydl.download([video_url])  # Download the video as audio
                 print(f"Downloaded: {video_title}.mp3")
             except Exception as e:
                 print(f"Failed to download {video_title}: {e}")
