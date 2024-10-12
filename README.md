@@ -2,11 +2,11 @@
 Downloads playlists
 
 First time setup
-'''bash
+```bash
 ./setup.sh
-'''
+```
 
 Run script
-'''bash
+```bash
 ./run.sh
-'''
+```
